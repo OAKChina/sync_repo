@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Mirror repos
+
+on:
+  schedule:
+  - cron:  "0 1 * * *"
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  sync:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: GitHub to GitHub
+        uses: k8scat/action-mirror-git@v0.1.3
+        with:
+          source_protocol: https
+          source_host: github.com
+          source_username: luxonis
+          dest_protocol: https
+          dest_host: github.com
+          dest_username: OAKChina
+          dest_token: ${{ secrets.GITHUB_TOKEN }}
+          mirror_repos: "depthai,depthai-python,depthai-ros,depthai-core,depthai-shared,depthai-bootloader-shared,depthai-unity,depthai-experiments,depthai-hardware,XLink"
+          dest_create_repo_script: |
+            if ! gh auth status; then
+              echo "${INPUT_DEST_TOKEN}" | gh auth login --with-token
+              gh auth status
+            fi
+            found=$(gh repo list ${INPUT_DEST_USERNAME} -L 1000 --json name -t "{{range .}}{{if (eq .name \"${REPO_NAME}\")}}{{.name}}{{end}}{{end}}")
+            if [[ -n "${found}" ]]; then
+              echo "Repo already exists: ${REPO_NAME}"
+              exit 0
+            fi
+            gh repo create "${INPUT_DEST_USERNAME}/${REPO_NAME}" --private
