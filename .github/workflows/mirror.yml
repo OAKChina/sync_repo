@@ -28,7 +28,7 @@ jobs:
           dest_protocol: https
           dest_host: github.com
           dest_username: OAKChina
-          dest_token: ${{ secrets.GITHUB_TOKEN }}
+          dest_token: ${{ secrets.CI_GITHUB_TOKEN }}
           mirror_repos: "depthai,depthai-python,depthai-ros,depthai-core,depthai-shared,depthai-bootloader-shared,depthai-unity,depthai-experiments,depthai-hardware,XLink"
           dest_create_repo_script: |
             if ! gh auth status; then
