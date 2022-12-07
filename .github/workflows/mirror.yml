@@ -40,4 +40,4 @@ jobs:
               echo "Repo already exists: ${REPO_NAME}"
               exit 0
             fi
-            gh repo create "${INPUT_DEST_USERNAME}/${REPO_NAME}" --private
+            gh repo create "${INPUT_DEST_USERNAME}/${REPO_NAME}" --public
